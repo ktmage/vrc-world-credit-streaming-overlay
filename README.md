@@ -30,7 +30,11 @@ dist/client/        ビルド出力（gitignore）
 
 ## 開発
 
+`.env.example` を `.env` にコピーして、`VRCHAT_API_CONTACT` に連絡先メールアドレスを設定する。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用アプリケーションは User-Agent ヘッダに連絡先を含めることが必須。
+
 ```bash
+cp .env.example .env
+# .env を編集
 bun install
 bun run dev
 ```
