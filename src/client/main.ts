@@ -1,15 +1,14 @@
 import { WORLD_CHANGED_EVENT, WorldInfoSchema, type WorldInfo } from "@/schema";
 
-const overlay = document.getElementById("overlay")!;
 const thumb = document.getElementById("thumb") as HTMLImageElement;
 const worldName = document.getElementById("world-name")!;
 const authorName = document.getElementById("author-name")!;
 
 function render(world: WorldInfo) {
   thumb.src = world.imageUrl;
+  thumb.hidden = false;
   worldName.textContent = world.name;
   authorName.textContent = world.authorName;
-  overlay.hidden = false;
 }
 
 const events = new EventSource("/events");
