@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  background: transparent;
+  font-family: system-ui, sans-serif;
+  color: #fff;
+}
+
+#overlay {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  max-width: 480px;
+}
+
+#overlay[hidden] {
+  display: none;
+}
+
+#thumb {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+#meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#world-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#author-name {
+  font-size: 14px;
+  opacity: 0.85;
+}

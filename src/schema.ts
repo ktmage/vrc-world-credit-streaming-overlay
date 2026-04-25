@@ -5,6 +5,8 @@ export const WorldIdSchema = z
   .regex(/^wrld_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
 export type WorldId = z.infer<typeof WorldIdSchema>;
 
+export const WORLD_CHANGED_EVENT = "world-changed";
+
 export const WorldInfoSchema = z.object({
   id: WorldIdSchema,
   name: z.string(),
