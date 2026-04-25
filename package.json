@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "concurrently -k -n client,server -c blue,green \"bun run dev:client\" \"bun run dev:server\"",
     "dev:client": "bun build ./src/client/index.html --outdir ./dist/client --watch",
-    "dev:server": "bun --watch ./src/server/index.ts",
+    "dev:server": "PORT=3000 bun --watch ./src/server/index.ts",
     "build": "bun build ./src/client/index.html --outdir ./dist/client --minify",
     "start": "bun ./src/server/index.ts"
   },

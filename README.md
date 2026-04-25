@@ -16,16 +16,18 @@ VRChat 配信時に、訪問中ワールドのクレジット（ワールド名�
 ## ディレクトリ構成
 
 ```
-src/                サーバ実装
-  server.ts         Hono アプリ
-  sse.ts            SSE ブロードキャスタ
-  vrchat-api.ts     VRChat API クライアント
-  log-watcher.ts    ログ監視（未実装）
-client/             OBS Browser Source 用 UI
-  index.html
-  main.ts
-  style.css
-dist/client/        ビルド出力（gitignore）
+src/
+  schema.ts            サーバ／クライアント共有のスキーマ・定数
+  server/              サーバ実装
+    index.ts           Hono アプリ
+    sse.ts             SSE ブロードキャスタ
+    vrchat-api.ts      VRChat API クライアント
+    log-watcher.ts     ログ監視（未実装）
+  client/              ブラウザソース用 UI
+    index.html
+    main.ts
+    style.css
+dist/client/           ビルド出力（gitignore）
 ```
 
 ## 開発
@@ -39,7 +41,7 @@ bun install
 bun run dev
 ```
 
-`http://localhost:3000` をブラウザ or OBS Browser Source で開く。
+起動後にコンソールへ表示されるブラウザソース URL（`http://localhost:3000`）を、ブラウザまたは配信ソフトのブラウザソースで開く。開発用ポートは `package.json` の `dev:server` スクリプトで `PORT=3000` を指定している。
 
 開発用に手動でワールド情報を流して表示確認するには:
 
@@ -47,12 +49,14 @@ bun run dev
 curl -X POST http://localhost:3000/api/dev/set-world/<world_id>
 ```
 
-## ビルド
+## ビルド・実行
 
 ```bash
 bun run build
-bun run start
+PORT=3000 bun run start
 ```
+
+`PORT` は必須。空き番号を指定する。
 
 ## ライセンス
 
