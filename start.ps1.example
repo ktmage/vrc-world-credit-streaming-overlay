@@ -9,4 +9,14 @@ $env:VRCHAT_API_CONTACT = "your-email@example.com"
 # 別の場所を参照させたいときだけ設定する。
 # $env:VRCHAT_LOG_DIR = "C:\path\to\logs"
 
-bun run start
+# ログのポーリング間隔 (ms)。既定 2000。
+# $env:VRCHAT_LOG_POLL_INTERVAL_MS = "2000"
+
+try {
+    bun run start
+} catch {
+    Write-Host "Error:" $_ -ForegroundColor Red
+}
+
+# 起動失敗時にウィンドウが即閉じしないよう待機する。
+Read-Host "終了するには Enter キーを押してください"
