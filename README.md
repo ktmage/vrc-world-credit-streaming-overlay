@@ -2,6 +2,8 @@
 
 English | [日本語](./README.ja.md)
 
+![hero](./assets/hero.jpeg)
+
 A tool that displays credits (world name, author, thumbnail, etc.) of the VRChat world you are currently visiting as an OBS overlay during streaming.
 
 > **Unofficial tool** — This project is not an official product of VRChat Inc., and has no affiliation, partnership, or endorsement relationship with them. It is an unofficial personal project. "VRChat" is a trademark of VRChat Inc., and this repository references the name solely for identification purposes. Users must comply with the VRChat [Terms of Service](https://hello.vrchat.com/legal) and [Creator Guidelines](https://hello.vrchat.com/creator-guidelines).

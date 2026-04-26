@@ -2,6 +2,8 @@
 
 [English](./README.md) | 日本語
 
+![hero](./assets/hero.jpeg)
+
 VRChat 配信時に、訪問中ワールドのクレジット（ワールド名・作者名・サムネイル等）を OBS にオーバーレイ表示するツール。
 
 > **非公式ツール** — 本プロジェクトは VRChat Inc. による公式プロダクトではなく、関連・提携・承認のいずれの関係も持たない非公式な個人プロジェクトである。"VRChat" は VRChat Inc. の商標であり、本リポジトリは識別目的でのみその名称を参照する。利用者は VRChat の [Terms of Service](https://hello.vrchat.com/legal) および [Creator Guidelines](https://hello.vrchat.com/creator-guidelines) を遵守すること。
