@@ -2,6 +2,8 @@
 
 VRChat 配信時に、訪問中ワールドのクレジット（ワールド名・作者名・サムネイル等）を OBS にオーバーレイ表示するツール。
 
+> **非公式ツール** — 本プロジェクトは VRChat Inc. による公式プロダクトではなく、関連・提携・承認のいずれの関係も持たない非公式な個人プロジェクトである。"VRChat" は VRChat Inc. の商標であり、本リポジトリは識別目的でのみその名称を参照する。利用者は VRChat の [Terms of Service](https://hello.vrchat.com/legal) および [Creator Guidelines](https://hello.vrchat.com/creator-guidelines) を遵守すること。
+
 ## 特徴
 
 - **VRChat にログインしません** — アカウントのメールアドレス・パスワード・2FA コードを一切要求しません。あなたの認証情報がこのツールを通ることはありません。
@@ -162,9 +164,3 @@ curl -X POST http://localhost:3000/api/dev/set-world/<world_id>
 ベースは MIT のため、使用・複製・改変・再配布・販売を自由に許可する。ただし追加条件として、**VRChat の Terms of Service および Creator Guidelines（[hello.vrchat.com](https://hello.vrchat.com)）に準拠する範囲でのみ** 利用できる。VRChat の規約に違反した時点で、本ライセンスにより付与された権利は自動的に消滅する。
 
 このツールは VRChat エコシステムの上に成り立つものであり、許される範囲は VRChat 自身が定めるべきという立場による。追加条件は VRChat の規約に独自制限を上乗せしない。逆に、VRChat の規約より緩く使うことも許可しない。
-
-## 免責事項
-
-本プロジェクトは VRChat Inc. による公式プロダクトではなく、関連・提携・承認のいずれの関係も持たない非公式な個人プロジェクトである。"VRChat" は VRChat Inc. の商標であり、本リポジトリは識別目的でのみその名称を参照する。
-
-本ツールは VRChat の [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) に従い、User-Agent に連絡先を含めた上で公開ワールド情報の取得のみを行う。VRChat アカウントへのログインや認証情報の取得は行わない。利用者は VRChat の Terms of Service および Creator Guidelines を遵守すること。
