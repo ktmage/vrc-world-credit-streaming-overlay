@@ -41,11 +41,32 @@ dist/client/           ビルド出力（gitignore）
 
 さらに調整したい場合は OBS の Custom CSS 欄で個別ルールを上書きする。
 
+## 使い方
+
+VRChat と同じ Windows PC で動かす想定。
+
+1. [Bun](https://bun.sh) をインストールする。
+2. このリポジトリを clone する。
+3. `.env.example` を `.env` にコピーし、`VRCHAT_API_CONTACT` に連絡先メールアドレスを設定する。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用時は User-Agent に連絡先を含めることが必須。
+4. ビルドして起動する:
+
+   ```bash
+   bun install
+   bun run build
+   PORT=3000 bun run start
+   ```
+
+   `PORT` は空き番号を指定する。
+
+5. 配信ソフトでブラウザソースを追加し、URL に `?style=` パラメータを付けて開く:
+
+   ```
+   http://localhost:3000/?style=card
+   ```
+
+ログディレクトリは Windows 既定パス（`%USERPROFILE%\AppData\LocalLow\VRChat\VRChat`）を自動で参照する。別の場所にある場合は `.env` の `VRCHAT_LOG_DIR` で上書きする。
+
 ## 開発
-
-`.env.example` を `.env` にコピーして、`VRCHAT_API_CONTACT` に連絡先メールアドレスを設定する。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用アプリケーションは User-Agent ヘッダに連絡先を含めることが必須。
-
-VRChat ログディレクトリは Windows 既定パス（`%USERPROFILE%\AppData\LocalLow\VRChat\VRChat`）を自動で参照する。別パスを参照させたいときは `.env` の `VRCHAT_LOG_DIR` で上書きする。
 
 ```bash
 cp .env.example .env
@@ -54,22 +75,13 @@ bun install
 bun run dev
 ```
 
-起動後にコンソールへ表示されるブラウザソース URL（`http://localhost:3000`）を、ブラウザまたは配信ソフトのブラウザソースで開く。開発用ポートは `package.json` の `dev:server` スクリプトで `PORT=3000` を指定している。
+`bun run dev` はクライアントのビルド監視とサーバ起動（`PORT=3000`）を同時に走らせる。
 
-開発用に手動でワールド情報を流して表示確認するには:
+ログを介さず手動でワールド情報を流して表示確認するには:
 
 ```bash
 curl -X POST http://localhost:3000/api/dev/set-world/<world_id>
 ```
-
-## ビルド・実行
-
-```bash
-bun run build
-PORT=3000 bun run start
-```
-
-`PORT` は必須。空き番号を指定する。
 
 ## ライセンス
 
