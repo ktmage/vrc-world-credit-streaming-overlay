@@ -53,7 +53,55 @@ VRChat と同じ Windows PC で動かす想定。
 
 ![topbar style](./assets/screenshots/topbar.png)
 
-さらに調整したい場合は OBS の Custom CSS 欄で個別ルールを上書きする。
+さらに調整したい場合は OBS の Custom CSS 欄で個別ルールを上書きする。詳細は次節参照。
+
+## カスタム CSS
+
+OBS のブラウザソース「カスタム CSS」欄に書き込めば、同梱スタイルの上に好きなルールを重ねられる（後勝ち）。素の HTML から自分で全部書きたいときは `?style=` を付けずに開けばよい。
+
+### DOM 構造
+
+オーバーレイは以下の固定された ID／クラスで構成されている。これらをセレクタに使う。実物のマークアップは [`src/client/index.html`](./src/client/index.html) を参照。
+
+```html
+<div id="overlay">
+  <img id="thumb" />              <!-- ワールドサムネイル。imageUrl 不在時は hidden 属性が付く -->
+  <div id="meta">
+    <div id="world-name">…</div>  <!-- ワールド名 -->
+    <div id="author-name">
+      <span class="by">by </span> <!-- "by " 接頭辞だけ薄くしたいときに使える -->
+      …                           <!-- 作者名（テキストノード） -->
+    </div>
+  </div>
+</div>
+```
+
+同梱スタイルそのものを上書き元として読みたい場合は [`styles/card.css`](./styles/card.css) / [`styles/topbar.css`](./styles/topbar.css) を参照。
+
+### OBS カスタム CSS の例
+
+```css
+/* 文字色とフォントを変える */
+#world-name { color: #ffd86b; font-family: "Noto Serif JP", serif; }
+#author-name { color: #c8b39a; }
+
+/* サムネイルを丸く小さく */
+#thumb { width: 64px; height: 64px; border-radius: 50%; }
+
+/* オーバーレイの位置を画面右下に固定する */
+#overlay {
+  position: fixed;
+  inset: auto 24px 24px auto;  /* top auto / right 24px / bottom 24px / left auto */
+}
+
+/* 入場アニメーションを止める */
+#overlay { animation: none; }
+
+/* "by " の前置詞を非表示にする */
+#author-name .by { display: none; }
+```
+
+> 同梱スタイルが指定しているプロパティを上書きしたいときは、より詳細度の高いセレクタにするか `!important` を付ける。
 
 ## 環境変数
 
