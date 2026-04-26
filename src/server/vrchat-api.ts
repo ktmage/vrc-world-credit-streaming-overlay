@@ -44,19 +44,40 @@ export function loadContact(): string {
   return v;
 }
 
+// 429 を踏んだ後、再起動するまでこの値を返し続ける。
+const RATE_LIMITED_PLACEHOLDER: WorldInfo = {
+  id: "wrld_00000000-0000-0000-0000-000000000000",
+  name: "VRChat API レート制限中",
+  authorName: "再起動するまで復帰しません",
+  imageUrl: "",
+  description: "",
+};
+
 export function createVrchatApi(contact: string) {
   const userAgent = `${pkg.name}/${pkg.version} ${contact}`;
+  const cache = new Map<string, WorldInfo>();
+  let rateLimited = false;
 
   async function fetchWorldInfo(worldId: string): Promise<WorldInfo> {
     if (!WorldIdSchema.safeParse(worldId).success) throw VrchatApiError.invalidWorldId(worldId);
+    if (rateLimited) return RATE_LIMITED_PLACEHOLDER;
+
+    const cached = cache.get(worldId);
+    if (cached) return cached;
+
     const res = await fetch(`https://vrchat.com/api/1/worlds/${worldId}`, {
       headers: { "User-Agent": userAgent },
     });
-    if (!res.ok) {
-      throw await VrchatApiError.fromResponse(res);
+    if (res.status === 429) {
+      rateLimited = true;
+      console.warn("VRChat API rate limit (429). Locked until restart.");
+      return RATE_LIMITED_PLACEHOLDER;
     }
+    if (!res.ok) throw await VrchatApiError.fromResponse(res);
+
     const parsed = WorldInfoSchema.safeParse(await res.json());
     if (!parsed.success) throw VrchatApiError.invalidResponse(parsed.error);
+    cache.set(worldId, parsed.data);
     return parsed.data;
   }
 

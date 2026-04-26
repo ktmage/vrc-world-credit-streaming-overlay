@@ -19,8 +19,13 @@ const worldName = document.getElementById("world-name")!;
 const authorName = document.getElementById("author-name")!;
 
 function render(world: WorldInfo) {
-  thumb.src = world.imageUrl;
-  thumb.hidden = false;
+  if (world.imageUrl) {
+    thumb.src = world.imageUrl;
+    thumb.hidden = false;
+  } else {
+    thumb.removeAttribute("src");
+    thumb.hidden = true;
+  }
   worldName.textContent = world.name;
   const by = document.createElement("span");
   by.className = "by";
