@@ -50,10 +50,11 @@ VRChat と同じ Windows PC で動かす想定。
 3. `.env.example` を `.env` にコピーし、`VRCHAT_API_CONTACT` に連絡先メールアドレスを設定する。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用時は User-Agent に連絡先を含めることが必須。
 4. ビルドして起動する:
 
-   ```bash
+   ```powershell
+   # PowerShell
    bun install
    bun run build
-   PORT=3000 bun run start
+   $env:PORT="3000"; bun run start
    ```
 
    `PORT` は空き番号を指定する。
