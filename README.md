@@ -47,36 +47,31 @@ VRChat と同じ Windows PC で動かす想定。
 
 1. [Bun](https://bun.sh) をインストールする。
 2. このリポジトリを clone する。
-3. `.env.example` を `.env` にコピーし、`VRCHAT_API_CONTACT` に連絡先メールアドレスを設定する。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用時は User-Agent に連絡先を含めることが必須。
-4. ビルドして起動する:
+3. 依存をインストールしてクライアントをビルドする:
 
    ```powershell
-   # PowerShell
    bun install
    bun run build
-   $env:PORT="3000"; bun run start
    ```
 
-   `PORT` は空き番号を指定する。
-
-5. 配信ソフトでブラウザソースを追加し、URL に `?style=` パラメータを付けて開く:
+4. `start.ps1.example` を `start.ps1` にコピーし、`VRCHAT_API_CONTACT` を自分の連絡先メールアドレスに書き換える。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用時は User-Agent に連絡先を含めることが必須。
+5. `start.ps1` を実行する（PowerShell から `.\start.ps1`、またはエクスプローラから右クリック → "PowerShell で実行"）。
+6. 配信ソフトでブラウザソースを追加し、URL に `?style=` パラメータを付けて開く:
 
    ```
    http://localhost:3000/?style=card
    ```
 
-ログディレクトリは Windows 既定パス（`%USERPROFILE%\AppData\LocalLow\VRChat\VRChat`）を自動で参照する。別の場所にある場合は `.env` の `VRCHAT_LOG_DIR` で上書きする。
+ログ場所は既定で `%USERPROFILE%\AppData\LocalLow\VRChat\VRChat` を参照する。別の場所を見せたい場合は `start.ps1` の `VRCHAT_LOG_DIR` のコメントを外して指定する。
 
 ## 開発
 
 ```bash
-cp .env.example .env
-# .env を編集
 bun install
-bun run dev
+VRCHAT_API_CONTACT=<your-email> bun run dev
 ```
 
-`bun run dev` はクライアントのビルド監視とサーバ起動（`PORT=3000`）を同時に走らせる。
+`bun run dev` はクライアントのビルド監視とサーバ起動を同時に走らせる。
 
 ログを介さず手動でワールド情報を流して表示確認するには:
 

@@ -1,0 +1,12 @@
+# このファイルを start.ps1 にコピーし、VRCHAT_API_CONTACT を自分の連絡先メールアドレスに
+# 書き換えて使う。VRChat Creator Guidelines により、API 利用時は User-Agent に連絡先を
+# 含めることが必須 (https://hello.vrchat.com/creator-guidelines#api-usage)。
+
+$env:PORT = "3000"
+$env:VRCHAT_API_CONTACT = "your-email@example.com"
+
+# ログ場所の既定は %USERPROFILE%\AppData\LocalLow\VRChat\VRChat。
+# 別の場所を参照させたいときだけ設定する。
+# $env:VRCHAT_LOG_DIR = "C:\path\to\logs"
+
+bun run start
