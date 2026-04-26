@@ -1,0 +1,19 @@
+@echo off
+rem このファイルを start.cmd にコピーし、VRCHAT_API_CONTACT を自分の連絡先メールアドレスに
+rem 書き換えて使う。VRChat Creator Guidelines により、API 利用時は User-Agent に連絡先を
+rem 含めることが必須 (https://hello.vrchat.com/creator-guidelines#api-usage)。
+
+cd /d "%~dp0"
+
+set PORT=3000
+set VRCHAT_API_CONTACT=your-email@example.com
+
+rem ログ場所の既定は %USERPROFILE%\AppData\LocalLow\VRChat\VRChat。
+rem 別の場所を参照させたいときだけ設定する。
+rem set VRCHAT_LOG_DIR=C:\path\to\logs
+
+rem ログのポーリング間隔 (ms)。既定 2000。
+rem set VRCHAT_LOG_POLL_INTERVAL_MS=2000
+
+bun run start
+pause

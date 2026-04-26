@@ -54,15 +54,15 @@ VRChat と同じ Windows PC で動かす想定。
    bun run build
    ```
 
-4. `start.ps1.example` を `start.ps1` にコピーし、`VRCHAT_API_CONTACT` を自分の連絡先メールアドレスに書き換える。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用時は User-Agent に連絡先を含めることが必須。
-5. `start.ps1` を実行する（PowerShell から `.\start.ps1`、またはエクスプローラから右クリック → "PowerShell で実行"）。
+4. `start.cmd.example` を `start.cmd` にコピーし、`VRCHAT_API_CONTACT` を自分の連絡先メールアドレスに書き換える。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用時は User-Agent に連絡先を含めることが必須。
+5. `start.cmd` をダブルクリックして起動する。
 6. 配信ソフトでブラウザソースを追加し、URL に `?style=` パラメータを付けて開く:
 
    ```
    http://localhost:3000/?style=card
    ```
 
-ログ場所は既定で `%USERPROFILE%\AppData\LocalLow\VRChat\VRChat` を参照する。別の場所を見せたい場合は `start.ps1` の `VRCHAT_LOG_DIR` のコメントを外して指定する。
+ログ場所は既定で `%USERPROFILE%\AppData\LocalLow\VRChat\VRChat` を参照する。別の場所を見せたい場合は `start.cmd` の `VRCHAT_LOG_DIR` のコメントを外して指定する。
 
 ## 開発
 
