@@ -83,4 +83,4 @@ const port = loadPort();
 console.log(`VRChat World Credit Overlay`);
 console.log(`Browser source URL: http://localhost:${port}`);
 
-export default { port, fetch: app.fetch };
+export default { port, fetch: app.fetch, idleTimeout: 0 };
