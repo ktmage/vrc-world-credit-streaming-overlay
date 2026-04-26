@@ -1,166 +1,168 @@
 # vrc-world-credit-streaming-overlay
 
-VRChat 配信時に、訪問中ワールドのクレジット（ワールド名・作者名・サムネイル等）を OBS にオーバーレイ表示するツール。
+English | [日本語](./README.ja.md)
 
-> **非公式ツール** — 本プロジェクトは VRChat Inc. による公式プロダクトではなく、関連・提携・承認のいずれの関係も持たない非公式な個人プロジェクトである。"VRChat" は VRChat Inc. の商標であり、本リポジトリは識別目的でのみその名称を参照する。利用者は VRChat の [Terms of Service](https://hello.vrchat.com/legal) および [Creator Guidelines](https://hello.vrchat.com/creator-guidelines) を遵守すること。
+A tool that displays credits (world name, author, thumbnail, etc.) of the VRChat world you are currently visiting as an OBS overlay during streaming.
 
-## 特徴
+> **Unofficial tool** — This project is not an official product of VRChat Inc., and has no affiliation, partnership, or endorsement relationship with them. It is an unofficial personal project. "VRChat" is a trademark of VRChat Inc., and this repository references the name solely for identification purposes. Users must comply with the VRChat [Terms of Service](https://hello.vrchat.com/legal) and [Creator Guidelines](https://hello.vrchat.com/creator-guidelines).
 
-- **VRChat にログインしません** — アカウントのメールアドレス・パスワード・2FA コードを一切要求しません。あなたの認証情報がこのツールを通ることはありません。
-- **VRChat 公式 API ガイドラインに準拠** — [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) の API 利用ルールに沿った設計（詳細は下記）。
-- **VRCX などの外部ツールに依存しません** — このツール単体で動作します。VRChat が出力するログファイルを直接読みます。
+## Features
 
-## ガイドライン準拠
+- **Does NOT log in to VRChat** — Never asks for your account email, password, or 2FA code. Your credentials never pass through this tool.
+- **Compliant with the official VRChat API guidelines** — Designed in accordance with the API usage rules in the [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) (details below).
+- **Does NOT depend on VRCX or other external tools** — Works on its own. It reads the log files VRChat itself writes.
 
-VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) の API 利用ルールに対して、以下のように準拠している。
+## Guideline Compliance
 
-- **認証情報を要求しない** — ログイン UI・トークン保存・セッションデータ取得のいずれも持たない。
-- **User-Agent 適正表記** — `appName/version contact` 形式で VRChat の指定どおり名乗る（`VRCHAT_API_CONTACT` で連絡先を必須化）。
-- **429 を受けたら叩き続けない** — レート制限を一度でも踏んだ瞬間にアプリを内部ロックし、再起動するまで以降 API を一切呼ばない。
-- **固定間隔の API 連打をしない** — ワールド移動を検知した瞬間にだけ単発で呼ぶイベント駆動。秒/分単位のクロックでポーリングしない。
-- **適切なキャッシュ** — 同一ワールドへの再訪はメモリキャッシュから返し、API への重複問い合わせを回避する。
-- **アップロード代理・インパーソネートなし** — 自分以外のアカウントで何かを実行する機能を持たない。アバター・ワールドのアップロード機能も持たない。
-- **公開ワールド情報のみ取得** — 認証無しで取得できる `GET /api/1/worlds/{id}` のみを叩く。プライベート・フレンド情報には一切アクセスしない。
+The tool complies with the API usage rules in the VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) as follows:
 
-## 使い方
+- **Does not request credentials** — No login UI, no token storage, no session data retrieval.
+- **Proper User-Agent** — Identifies itself in the `appName/version contact` format as specified by VRChat (`VRCHAT_API_CONTACT` makes the contact mandatory).
+- **Does not hammer after a 429** — The moment a rate limit is hit, the app internally locks itself and never calls the API again until restart.
+- **No fixed-interval API polling** — Event-driven: a single call only at the moment a world transition is detected. Does not poll on a per-second/per-minute clock.
+- **Appropriate caching** — Revisits to the same world are returned from the in-memory cache, avoiding duplicate API queries.
+- **No upload proxying or impersonation** — Does not have any feature to act on behalf of another account. Does not have any avatar/world upload feature.
+- **Public world info only** — Calls only `GET /api/1/worlds/{id}`, which is retrievable without authentication. Never accesses private or friend-only information.
 
-VRChat と同じ Windows PC で動かす想定。
+## Usage
 
-1. [Bun](https://bun.sh) をインストールする。
-2. このリポジトリを clone する。
-3. 依存をインストールしてクライアントをビルドする:
+Intended to run on the same Windows PC as VRChat.
+
+1. Install [Bun](https://bun.sh).
+2. Clone this repository.
+3. Install dependencies and build the client:
 
    ```powershell
    bun install
    bun run build
    ```
 
-4. `start.cmd.example` を `start.cmd` にコピーし、`VRCHAT_API_CONTACT` を自分の連絡先メールアドレスに書き換える。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用時は User-Agent に連絡先を含めることが必須。
-5. `start.cmd` をダブルクリックして起動する。
-6. 配信ソフトでブラウザソースを追加し、URL に `?style=` パラメータを付けて開く:
+4. Copy `start.cmd.example` to `start.cmd` and replace `VRCHAT_API_CONTACT` with your own contact email address. The VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) require including a contact in the User-Agent when using the API.
+5. Double-click `start.cmd` to launch.
+6. In your streaming software, add a Browser Source and open it with the `?style=` parameter:
 
    ```
    http://localhost:3000/?style=card
    ```
 
-## スタイル
+## Styles
 
-ブラウザソース URL の `?style=<name>` で見た目を切り替える。未指定時は CSS 無しの素の HTML。
+Switch the appearance with `?style=<name>` in the browser source URL. If unspecified, the page renders as raw HTML with no CSS.
 
-### `?style=card` — 大きめのクレジットカード
+### `?style=card` — Larger credit-card style
 
 ![card style](./assets/screenshots/card.png)
 
-### `?style=topbar` — 画面上部中央の通知風ピル
+### `?style=topbar` — Notification-style pill at the top center of the screen
 
 ![topbar style](./assets/screenshots/topbar.png)
 
-さらに調整したい場合は OBS の Custom CSS 欄で個別ルールを上書きする。詳細は次節参照。
+To tweak further, override individual rules in OBS's Custom CSS field. See the next section for details.
 
-## カスタム CSS
+## Custom CSS
 
-OBS のブラウザソース「カスタム CSS」欄に書き込めば、同梱スタイルの上に好きなルールを重ねられる（後勝ち）。素の HTML から自分で全部書きたいときは `?style=` を付けずに開けばよい。
+Anything you write into OBS's Browser Source "Custom CSS" field is layered on top of the bundled style (later wins). If you'd rather build everything from raw HTML yourself, just open the page without `?style=`.
 
-### DOM 構造
+### DOM structure
 
-オーバーレイは以下の固定された ID／クラスで構成されている。これらをセレクタに使う。実物のマークアップは [`src/client/index.html`](./src/client/index.html) を参照。
+The overlay is built from the following fixed IDs / classes. Use them as selectors. The actual markup is at [`src/client/index.html`](./src/client/index.html).
 
 ```html
 <div id="overlay">
-  <img id="thumb" />              <!-- ワールドサムネイル。imageUrl 不在時は hidden 属性が付く -->
+  <img id="thumb" />              <!-- World thumbnail. Gets `hidden` attribute when imageUrl is absent -->
   <div id="meta">
-    <div id="world-name">…</div>  <!-- ワールド名 -->
+    <div id="world-name">…</div>  <!-- World name -->
     <div id="author-name">
-      <span class="by">by </span> <!-- "by " 接頭辞だけ薄くしたいときに使える -->
-      …                           <!-- 作者名（テキストノード） -->
+      <span class="by">by </span> <!-- Useful when you want to dim only the "by " prefix -->
+      …                           <!-- Author name (text node) -->
     </div>
   </div>
 </div>
 ```
 
-同梱スタイルそのものを上書き元として読みたい場合は [`styles/card.css`](./styles/card.css) / [`styles/topbar.css`](./styles/topbar.css) を参照。
+If you'd like to read the bundled styles as a starting point for your overrides, see [`styles/card.css`](./styles/card.css) / [`styles/topbar.css`](./styles/topbar.css).
 
-### OBS カスタム CSS の例
+### OBS Custom CSS examples
 
 ```css
-/* 文字色とフォントを変える */
+/* Change text color and font */
 #world-name { color: #ffd86b; font-family: "Noto Serif JP", serif; }
 #author-name { color: #c8b39a; }
 
-/* サムネイルを丸く小さく */
+/* Make the thumbnail small and round */
 #thumb { width: 64px; height: 64px; border-radius: 50%; }
 
-/* オーバーレイの位置を画面右下に固定する */
+/* Pin the overlay to the bottom-right corner */
 #overlay {
   position: fixed;
   inset: auto 24px 24px auto;  /* top auto / right 24px / bottom 24px / left auto */
 }
 
-/* 入場アニメーションを止める */
+/* Disable the entry animation */
 #overlay { animation: none; }
 
-/* "by " の前置詞を非表示にする */
+/* Hide the "by " prefix */
 #author-name .by { display: none; }
 ```
 
-> 同梱スタイルが指定しているプロパティを上書きしたいときは、より詳細度の高いセレクタにするか `!important` を付ける。
+> When overriding a property the bundled style sets, raise selector specificity or add `!important`.
 
-## 環境変数
+## Environment variables
 
-`start.cmd` で設定する。
+Set these in `start.cmd`.
 
-- `VRCHAT_API_CONTACT` (必須) — VRChat API の User-Agent に含める連絡先メールアドレス。Creator Guidelines により必須。
-- `PORT` — サーバのポート番号（既定 `3000`）。
-- `VRCHAT_LOG_DIR` — VRChat ログディレクトリ（既定 `%USERPROFILE%\AppData\LocalLow\VRChat\VRChat`）。別の場所を参照させたいときだけ指定する。
-- `VRCHAT_LOG_POLL_INTERVAL_MS` — ログのポーリング間隔（ミリ秒、既定 `2000`）。
+- `VRCHAT_API_CONTACT` (required) — Contact email to include in the VRChat API User-Agent. Required by the Creator Guidelines.
+- `PORT` — Server port number (default `3000`).
+- `VRCHAT_LOG_DIR` — VRChat log directory (default `%USERPROFILE%\AppData\LocalLow\VRChat\VRChat`). Specify only when you want to point at a different location.
+- `VRCHAT_LOG_POLL_INTERVAL_MS` — Log polling interval in milliseconds (default `2000`).
 
 ---
 
-## 技術スタック
+## Tech stack
 
-- ランタイム: Bun
-- 言語: TypeScript
-- サーバ: Hono
-- 通信: Server-Sent Events (SSE)
+- Runtime: Bun
+- Language: TypeScript
+- Server: Hono
+- Transport: Server-Sent Events (SSE)
 
-## ディレクトリ構成
+## Directory layout
 
 ```
 src/
-  schema.ts            サーバ／クライアント共有のスキーマ・定数
-  server/              サーバ実装
-    index.ts           Hono アプリ
-    sse.ts             SSE ブロードキャスタ
-    vrchat-api.ts      VRChat API クライアント
-    log-watcher.ts     VRChat ログ監視
-  client/              ブラウザソース用 UI
+  schema.ts            Schemas/constants shared between server and client
+  server/              Server implementation
+    index.ts           Hono app
+    sse.ts             SSE broadcaster
+    vrchat-api.ts      VRChat API client
+    log-watcher.ts     VRChat log watcher
+  client/              Browser-source UI
     index.html
     main.ts
-styles/                同梱スタイル（?style=<name> で切替）
+styles/                Bundled styles (switched by ?style=<name>)
   card.css
   topbar.css
-dist/client/           ビルド出力（gitignore）
+dist/client/           Build output (gitignored)
 ```
 
-## 開発
+## Development
 
 ```bash
 bun install
 VRCHAT_API_CONTACT=<your-email> bun run dev
 ```
 
-`bun run dev` はクライアントのビルド監視とサーバ起動を同時に走らせる。
+`bun run dev` runs the client build watcher and the server concurrently.
 
-ログを介さず手動でワールド情報を流して表示確認するには:
+To push world info manually for display verification without going through the log:
 
 ```bash
 curl -X POST http://localhost:3000/api/dev/set-world/<world_id>
 ```
 
-## ライセンス
+## License
 
-[MIT License](./LICENSE) + Additional Condition（VRChat Policy Compliance）。
+[MIT License](./LICENSE) + Additional Condition (VRChat Policy Compliance).
 
-ベースは MIT のため、使用・複製・改変・再配布・販売を自由に許可する。ただし追加条件として、**VRChat の Terms of Service および Creator Guidelines（[hello.vrchat.com](https://hello.vrchat.com)）に準拠する範囲でのみ** 利用できる。VRChat の規約に違反した時点で、本ライセンスにより付与された権利は自動的に消滅する。
+The base is MIT, so use, copy, modification, redistribution, and sale are freely permitted. However, as an additional condition, the software may only be used **within the scope permitted by the VRChat Terms of Service and Creator Guidelines ([hello.vrchat.com](https://hello.vrchat.com))**. The moment a user violates the VRChat policies, the rights granted by this license terminate automatically.
 
-このツールは VRChat エコシステムの上に成り立つものであり、許される範囲は VRChat 自身が定めるべきという立場による。追加条件は VRChat の規約に独自制限を上乗せしない。逆に、VRChat の規約より緩く使うことも許可しない。
+The position behind this license is that this tool exists on top of the VRChat ecosystem, and the scope of what's permitted should be defined by VRChat itself. The additional condition does not impose extra independent restrictions beyond the VRChat policies. Conversely, it does not permit usage looser than what the VRChat policies allow.
