@@ -120,12 +120,15 @@ export async function startLogWatcher(
     }
   }
 
+  console.log(`[log-watcher] watching dir: ${logDir}`);
   const initial = await findLatestLog(logDir);
+  console.log(`[log-watcher] initial file: ${initial ?? "(none)"}`);
   if (initial) await switchTo(initial);
 
   void (async () => {
     try {
       for await (const event of watch(logDir, { signal: abort.signal })) {
+        console.log(`[log-watcher] event: ${event.eventType} ${event.filename ?? "(no filename)"}`);
         await handleEvent(event.filename);
       }
     } catch (error) {
