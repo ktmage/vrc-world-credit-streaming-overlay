@@ -1,11 +1,10 @@
-import { open, readdir, watch } from "node:fs/promises";
+import { open, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
 const JOIN_PATTERN =
   /\[Behaviour\] Joining (wrld_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/;
 const LOG_FILE_PATTERN = /^output_log_.*\.txt$/;
-const DEBOUNCE_MS = 300;
-const MAX_WAIT_MS = 1000;
+const DEFAULT_POLL_INTERVAL_MS = 2000;
 const WINDOWS_LOG_SUBPATH = ["AppData", "LocalLow", "VRChat", "VRChat"] as const;
 
 export class LogWatcherError extends Error {
@@ -22,10 +21,22 @@ export function loadLogDir(): string {
   if (!userProfile) {
     throw new LogWatcherError(
       "VRCHAT_LOG_DIR is not set and USERPROFILE is unavailable. " +
-        "Set VRCHAT_LOG_DIR to your VRChat log directory in .env.",
+        "Set VRCHAT_LOG_DIR to your VRChat log directory.",
     );
   }
   return join(userProfile, ...WINDOWS_LOG_SUBPATH);
+}
+
+export function loadPollIntervalMs(): number {
+  const value = process.env.VRCHAT_LOG_POLL_INTERVAL_MS;
+  if (!value) return DEFAULT_POLL_INTERVAL_MS;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1) {
+    throw new LogWatcherError(
+      `VRCHAT_LOG_POLL_INTERVAL_MS must be a positive integer (ms). Got: ${JSON.stringify(value)}`,
+    );
+  }
+  return n;
 }
 
 export type WorldChangeHandler = (worldId: string) => void | Promise<void>;
@@ -49,14 +60,12 @@ function findLastWorldId(text: string): string | null {
 export async function startLogWatcher(
   logDir: string,
   onWorldChange: WorldChangeHandler,
+  pollIntervalMs: number = DEFAULT_POLL_INTERVAL_MS,
 ): Promise<() => void> {
   let current: { name: string; offset: number } | null = null;
   // チャンクが行途中で切れたときの持ち越し。次回テキストの先頭に連結する。
   let leftover = "";
   let lastEmitted: string | null = null;
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-  let firstEventAt: number | null = null;
-  const abort = new AbortController();
 
   async function readDiff(): Promise<void> {
     if (!current) return;
@@ -95,50 +104,21 @@ export async function startLogWatcher(
     await readDiff();
   }
 
-  // 書き込みが止んだら DEBOUNCE_MS 後、止まなくても初回から MAX_WAIT_MS で強制発火。
-  function scheduleRead(): void {
-    const now = Date.now();
-    if (firstEventAt === null) firstEventAt = now;
-    if (debounceTimer) clearTimeout(debounceTimer);
-    const delay = Math.max(0, Math.min(DEBOUNCE_MS, MAX_WAIT_MS - (now - firstEventAt)));
-    debounceTimer = setTimeout(() => {
-      debounceTimer = null;
-      firstEventAt = null;
-      readDiff().catch((error) => console.warn("log watcher read error:", error));
-    }, delay);
-  }
-
-  async function handleEvent(filename: string | null | undefined): Promise<void> {
-    if (filename && !LOG_FILE_PATTERN.test(filename)) return;
-    const target = filename ?? (await findLatestLog(logDir));
-    if (!target) return;
-
-    if (!current || target > current.name) {
-      await switchTo(target);
-    } else if (target === current.name) {
-      scheduleRead();
+  async function tick(): Promise<void> {
+    const latest = await findLatestLog(logDir);
+    if (!latest) return;
+    if (!current || latest > current.name) {
+      await switchTo(latest);
+    } else if (latest === current.name) {
+      await readDiff();
     }
   }
 
-  console.log(`[log-watcher] watching dir: ${logDir}`);
-  const initial = await findLatestLog(logDir);
-  console.log(`[log-watcher] initial file: ${initial ?? "(none)"}`);
-  if (initial) await switchTo(initial);
+  await tick();
 
-  void (async () => {
-    try {
-      for await (const event of watch(logDir, { signal: abort.signal })) {
-        console.log(`[log-watcher] event: ${event.eventType} ${event.filename ?? "(no filename)"}`);
-        await handleEvent(event.filename);
-      }
-    } catch (error) {
-      if ((error as { name?: string }).name === "AbortError") return;
-      console.error("log watcher fatal:", error);
-    }
-  })();
+  const timer = setInterval(() => {
+    tick().catch((error) => console.warn("log watcher tick error:", error));
+  }, pollIntervalMs);
 
-  return () => {
-    abort.abort();
-    if (debounceTimer) clearTimeout(debounceTimer);
-  };
+  return () => clearInterval(timer);
 }

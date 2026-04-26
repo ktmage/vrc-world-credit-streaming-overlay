@@ -3,19 +3,23 @@ import { streamSSE } from "hono/streaming";
 import { serveStatic } from "hono/bun";
 import { broadcast, subscribe } from "./sse";
 import { createVrchatApi, loadContact, VrchatApiError } from "./vrchat-api";
-import { loadLogDir, startLogWatcher } from "./log-watcher";
+import { loadLogDir, loadPollIntervalMs, startLogWatcher } from "./log-watcher";
 import { WORLD_CHANGED_EVENT } from "@/schema";
 
 const vrchat = createVrchatApi(loadContact());
 
-await startLogWatcher(loadLogDir(), async (worldId) => {
-  try {
-    const world = await vrchat.fetchWorldInfo(worldId);
-    broadcast(WORLD_CHANGED_EVENT, world);
-  } catch (error) {
-    console.warn(`failed to fetch world ${worldId}:`, error);
-  }
-});
+await startLogWatcher(
+  loadLogDir(),
+  async (worldId) => {
+    try {
+      const world = await vrchat.fetchWorldInfo(worldId);
+      broadcast(WORLD_CHANGED_EVENT, world);
+    } catch (error) {
+      console.warn(`failed to fetch world ${worldId}:`, error);
+    }
+  },
+  loadPollIntervalMs(),
+);
 
 const app = new Hono();
 
