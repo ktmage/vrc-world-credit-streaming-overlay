@@ -87,9 +87,6 @@ export async function startLogWatcher(
       leftover = combined.slice(lastNewline + 1);
 
       const worldId = findLastWorldId(combined.slice(0, lastNewline));
-      console.log(
-        `[log-watcher] read ${buffer.length} bytes, worldId=${worldId ?? "(none)"}, lastEmitted=${lastEmitted ?? "(none)"}`,
-      );
       if (worldId && worldId !== lastEmitted) {
         lastEmitted = worldId;
         void Promise.resolve(onWorldChange(worldId)).catch((error) => {
@@ -102,7 +99,6 @@ export async function startLogWatcher(
   }
 
   async function switchTo(filename: string): Promise<void> {
-    console.log(`[log-watcher] switching to ${filename}`);
     current = { name: filename, offset: 0 };
     leftover = "";
     await readDiff();
@@ -110,10 +106,7 @@ export async function startLogWatcher(
 
   async function tick(): Promise<void> {
     const latest = await findLatestLog(logDir);
-    if (!latest) {
-      console.log(`[log-watcher] no log files in ${logDir}`);
-      return;
-    }
+    if (!latest) return;
     if (!current || latest > current.name) {
       await switchTo(latest);
     } else if (latest === current.name) {
@@ -121,7 +114,6 @@ export async function startLogWatcher(
     }
   }
 
-  console.log(`[log-watcher] watching ${logDir} (poll ${pollIntervalMs}ms)`);
   await tick();
 
   const timer = setInterval(() => {
