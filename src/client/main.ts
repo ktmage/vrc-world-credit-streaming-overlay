@@ -8,7 +8,10 @@ function render(world: WorldInfo) {
   thumb.src = world.imageUrl;
   thumb.hidden = false;
   worldName.textContent = world.name;
-  authorName.textContent = world.authorName;
+  const by = document.createElement("span");
+  by.className = "by";
+  by.textContent = "by ";
+  authorName.replaceChildren(by, document.createTextNode(world.authorName));
 }
 
 const events = new EventSource("/events");
