@@ -26,9 +26,20 @@ src/
   client/              ブラウザソース用 UI
     index.html
     main.ts
-    style.css
+styles/                同梱スタイル（?style=<name> で切替）
+  card.css
+  topbar.css
 dist/client/           ビルド出力（gitignore）
 ```
+
+## スタイル
+
+ブラウザソース URL の `?style=<name>` で見た目を切り替える。未指定時は CSS 無しの素の HTML:
+
+- `?style=card` — 大きめのクレジットカード
+- `?style=topbar` — 画面上部中央の通知風ピル
+
+さらに調整したい場合は OBS の Custom CSS 欄で個別ルールを上書きする。
 
 ## 開発
 

@@ -56,6 +56,9 @@ app.post("/api/dev/set-world/:id", async (context) => {
   }
 });
 
+// スタイル CSS の配信（?style=<name> から参照される）
+app.use("/styles/*", serveStatic({ root: "./" }));
+
 // 静的ファイルの配信
 app.use("/*", serveStatic({ root: "./dist/client" }));
 
