@@ -4,7 +4,7 @@ VRChat 配信時に、訪問中ワールドのクレジット（ワールド名�
 
 ## ステータス
 
-開発初期。サーバ・表示部の雛形を構築済み。VRChat ログ監視は未実装。
+開発初期。サーバ・表示部・VRChat ログ監視まで実装済み。
 
 ## 技術スタック
 
@@ -22,7 +22,7 @@ src/
     index.ts           Hono アプリ
     sse.ts             SSE ブロードキャスタ
     vrchat-api.ts      VRChat API クライアント
-    log-watcher.ts     ログ監視（未実装）
+    log-watcher.ts     VRChat ログ監視
   client/              ブラウザソース用 UI
     index.html
     main.ts
@@ -44,6 +44,8 @@ dist/client/           ビルド出力（gitignore）
 ## 開発
 
 `.env.example` を `.env` にコピーして、`VRCHAT_API_CONTACT` に連絡先メールアドレスを設定する。VRChat [Creator Guidelines](https://hello.vrchat.com/creator-guidelines#api-usage) により、API 利用アプリケーションは User-Agent ヘッダに連絡先を含めることが必須。
+
+VRChat ログディレクトリは Windows 既定パス（`%USERPROFILE%\AppData\LocalLow\VRChat\VRChat`）を自動で参照する。別パスを参照させたいときは `.env` の `VRCHAT_LOG_DIR` で上書きする。
 
 ```bash
 cp .env.example .env

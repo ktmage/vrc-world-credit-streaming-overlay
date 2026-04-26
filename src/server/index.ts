@@ -3,24 +3,21 @@ import { streamSSE } from "hono/streaming";
 import { serveStatic } from "hono/bun";
 import { broadcast, subscribe } from "./sse";
 import { createVrchatApi, loadContact, VrchatApiError } from "./vrchat-api";
+import { loadLogDir, startLogWatcher } from "./log-watcher";
 import { WORLD_CHANGED_EVENT } from "@/schema";
 
 const vrchat = createVrchatApi(loadContact());
 
-const app = new Hono();
-
-app.get("/api/world/:id", async (context) => {
-  const id = context.req.param("id");
+await startLogWatcher(loadLogDir(), async (worldId) => {
   try {
-    const world = await vrchat.fetchWorldInfo(id);
-    return context.json(world);
+    const world = await vrchat.fetchWorldInfo(worldId);
+    broadcast(WORLD_CHANGED_EVENT, world);
   } catch (error) {
-    if (error instanceof VrchatApiError) {
-      return context.json({ error: error.message }, error.status === 404 ? 404 : 502);
-    }
-    throw error;
+    console.warn(`failed to fetch world ${worldId}:`, error);
   }
 });
+
+const app = new Hono();
 
 app.get("/events", (context) =>
   streamSSE(context, async (stream) => {
@@ -31,7 +28,6 @@ app.get("/events", (context) =>
       });
     });
 
-    // クリーンアップのため、クライアントが切断されたときにイベント購読を解除する
     await new Promise<void>((resolve) =>
       stream.onAbort(() => {
         unsubscribe();
@@ -41,7 +37,7 @@ app.get("/events", (context) =>
   }),
 );
 
-// 開発用: 任意の world ID を手動で配信し、表示部の動作確認に使う
+// 開発用: 任意の world ID を手動で配信して表示部の動作確認に使う
 app.post("/api/dev/set-world/:id", async (context) => {
   const id = context.req.param("id");
   try {
@@ -56,10 +52,7 @@ app.post("/api/dev/set-world/:id", async (context) => {
   }
 });
 
-// スタイル CSS の配信（?style=<name> から参照される）
 app.use("/styles/*", serveStatic({ root: "./" }));
-
-// 静的ファイルの配信
 app.use("/*", serveStatic({ root: "./dist/client" }));
 
 class InvalidPortError extends Error {
